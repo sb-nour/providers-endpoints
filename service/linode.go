@@ -1,12 +1,25 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
+
+type LinodeRegion struct {
+	ID      string   `json:"id"`
+	Label   string   `json:"label"`
+	Country string   `json:"country"`
+	Options []string `json:"capabilities"`
+}
+
+type LinodeResponse struct {
+	Regions []LinodeRegion `json:"data"`
+}
 
 func getLinodeStorageRegions() map[string]string {
 	url := "https://www.linode.com/docs/products/storage/object-storage/"
@@ -46,8 +59,41 @@ func getLinodeStorageRegions() map[string]string {
 	return regionMap
 }
 
+func getLinodeData() LinodeResponse {
+	url := "https://api.linode.com/v4/regions"
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var data LinodeResponse
+	json.Unmarshal(body, &data)
+
+	return data
+}
+
+func getLinodeComputeRegions(data LinodeResponse) map[string]string {
+	var regionMap map[string]string = make(map[string]string)
+	for _, region := range data.Regions {
+		for _, option := range region.Options {
+			if option == "Linodes" {
+				regionMap[region.ID] = fmt.Sprintf("%s - %s", region.Label, region.ID)
+			}
+		}
+	}
+
+	return regionMap
+}
+
 func GetLinodeRegions() Regions {
 	return Regions{
 		Storage: getLinodeStorageRegions(),
+		Compute: getLinodeComputeRegions(getLinodeData()),
 	}
 }
