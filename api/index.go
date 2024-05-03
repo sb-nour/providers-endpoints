@@ -25,6 +25,7 @@ var providers = []struct {
 	{"Outscale", service.GetOutscaleRegions},
 	{"Storj", service.GetStorjRegions},
 	{"Vultr", service.GetVultrRegions},
+	{"Hetzner", service.GetHetznerRegions},
 }
 
 func getRegions() map[string]service.Regions {

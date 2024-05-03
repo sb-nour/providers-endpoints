@@ -33,6 +33,7 @@ func getRegions() map[string]service.Regions {
 		{"Outscale", service.GetOutscaleRegions},
 		{"Storj", service.GetStorjRegions},
 		{"Vultr", service.GetVultrRegions},
+		{"Hetzner", service.GetHetznerRegions},
 	}
 
 	for _, provider := range providers {
