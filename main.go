@@ -21,18 +21,18 @@ func getRegions() map[string]service.Regions {
 		name string
 		fn   func() service.Regions
 	}{
-		{"AWS", service.GetAmazonRegions},
-		{"LIGHTSAIL", service.GetLightsailRegions},
-		{"DIGITALOCEAN", service.GetDigitalOceanRegions},
-		{"UPCLOUD", service.GetUpcloudRegions},
-		{"EXOSCALE", service.GetExoscaleRegions},
-		{"WASABI", service.GetWasabiRegions},
-		{"GOOGLE_CLOUD", service.GetGoogleCloudRegions},
-		{"BACKBLAZE", service.GetBackblazeRegions},
-		{"LINODE", service.GetLinodeRegions},
-		{"OUTSCALE", service.GetOutscaleRegions},
-		{"STORJ", service.GetStorjRegions},
-		{"VULTR", service.GetVultrRegions},
+		{"Amazon AWS", service.GetAmazonRegions},
+		{"Amazon Lightsail", service.GetLightsailRegions},
+		{"DigitalOcean", service.GetDigitalOceanRegions},
+		{"UpCloud", service.GetUpcloudRegions},
+		{"Exoscale", service.GetExoscaleRegions},
+		{"Wasabi", service.GetWasabiRegions},
+		{"Google Cloud", service.GetGoogleCloudRegions},
+		{"Backblaze", service.GetBackblazeRegions},
+		{"Linode", service.GetLinodeRegions},
+		{"Outscale", service.GetOutscaleRegions},
+		{"Storj", service.GetStorjRegions},
+		{"Vultr", service.GetVultrRegions},
 	}
 
 	for _, provider := range providers {
