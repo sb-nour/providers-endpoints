@@ -1,14 +1,15 @@
-package main
+package service
 
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getExoscaleStorageRegions() map[string]string {
-	url := "https://community.exoscale.com/documentation/platform/exoscale-datacenter-zones/"
+func getLinodeStorageRegions() map[string]string {
+	url := "https://www.linode.com/docs/products/storage/object-storage/"
 
 	// Make a GET request to the URL
 	resp, err := http.Get(url)
@@ -28,25 +29,25 @@ func getExoscaleStorageRegions() map[string]string {
 	var regionMap map[string]string = make(map[string]string)
 	doc.Find("table").Each(func(i int, table *goquery.Selection) {
 		// if table doesn't have more than 2 rows, return
-		if table.Find("tbody tr").Length() < 2 {
+		if table.Find("tbody tr").Length() < 5 {
 			return
 		}
 
-		table.Find("tbody tr").Each(func(i int, row *goquery.Selection) {
+		if table.Find("thead th").Length() == 2 && table.Find("thead th").Eq(0).Text() == "Data Center" {
 
-			regionCode := row.Find("td").Eq(2).Text()
-			regionName := row.Find("td").Eq(1).Text()
-			regionMap[regionCode] = regionName
-		})
-
+			table.Find("tbody tr").Each(func(i int, row *goquery.Selection) {
+				regionCode := row.Find("td").Eq(1).Text()
+				regionName := strings.ReplaceAll(row.Find("td").Eq(0).Text(), "*", "")
+				regionMap[regionCode] = regionName
+			})
+		}
 	})
 
 	return regionMap
 }
 
-func getExoscaleRegions() Regions {
+func getLinodeRegions() Regions {
 	return Regions{
-		Storage: getExoscaleStorageRegions(),
-		Compute: getExoscaleStorageRegions(),
+		Storage: getLinodeStorageRegions(),
 	}
 }
