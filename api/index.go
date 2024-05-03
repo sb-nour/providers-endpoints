@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/sb-nour/providers-endpoints/service"
@@ -22,17 +23,17 @@ func getRegions() map[string]service.Regions {
 		fn   func() service.Regions
 	}{
 		{"AWS", service.GetAmazonRegions},
-		{"LIGHTSAIL", service.GetLightsailRegions},
-		{"DIGITALOCEAN", service.GetDigitalOceanRegions},
-		{"UPCLOUD", service.GetUpcloudRegions},
-		{"EXOSCALE", service.GetExoscaleRegions},
-		{"WASABI", service.GetWasabiRegions},
-		{"GOOGLE_CLOUD", service.GetGoogleCloudRegions},
 		{"BACKBLAZE", service.GetBackblazeRegions},
+		{"DIGITALOCEAN", service.GetDigitalOceanRegions},
+		{"EXOSCALE", service.GetExoscaleRegions},
+		{"GOOGLE_CLOUD", service.GetGoogleCloudRegions},
+		{"LIGHTSAIL", service.GetLightsailRegions},
 		{"LINODE", service.GetLinodeRegions},
 		{"OUTSCALE", service.GetOutscaleRegions},
 		{"STORJ", service.GetStorjRegions},
+		{"UPCLOUD", service.GetUpcloudRegions},
 		{"VULTR", service.GetVultrRegions},
+		{"WASABI", service.GetWasabiRegions},
 	}
 
 	for _, provider := range providers {
@@ -66,11 +67,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		context.JSON(200, regions)
 	})
 	server.GET("/:key", func(context *gee.Context) {
-		if _, ok := regions[context.Param("key")]; !ok {
-			context.JSON(404, "Not Found")
+		key := strings.ToUpper(context.Param("key"))
+		if _, ok := regions[key]; !ok {
+			context.JSON(404, gee.H{"error": "Not Found"})
 			return
 		}
-		context.JSON(200, regions[context.Param("key")])
+		context.JSON(200, regions[key])
 	})
 	server.Handle(w, r)
 }
