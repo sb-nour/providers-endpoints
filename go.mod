@@ -1,4 +1,4 @@
-module simplebackups.com/providers
+module github.com/sb-nour/providers-endpoints
 
 go 1.22.2
 
