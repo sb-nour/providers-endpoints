@@ -65,11 +65,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	server.GET("/", func(context *gee.Context) {
 		regions := getRegions()
-		// regionsJson, err := json.Marshal(regions)
-		// if err != nil {
-		// 	fmt.Println("Error marshalling JSON:", err)
-		// 	return
-		// }
 		context.JSON(200, regions)
 	})
 	server.GET("/hello", func(context *gee.Context) {
