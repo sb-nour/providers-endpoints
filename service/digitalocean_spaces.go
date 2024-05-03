@@ -40,8 +40,40 @@ func getDigitalOceanSpacesRegions() map[string]string {
 	return translateRegions(regions)
 }
 
+func getDigitalOceanDropletRegions() map[string]string {
+	url := "https://docs.digitalocean.com/products/platform/availability-matrix/"
+
+	// Make a GET request to the URL
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error making GET request:", err)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+
+	if err != nil {
+		fmt.Println("Error loading HTML:", err)
+		return nil
+	}
+
+	var regionMap = make(map[string]string)
+	doc.Find("table").Each(func(index int, table *goquery.Selection) {
+		if table.Find("thead th").First().Text() == "Datacenter" {
+			table.Find("tbody tr").Each(func(index int, tr *goquery.Selection) {
+				regionCode := tr.Children().Eq(2).Text()
+				regionName := fmt.Sprintf("%s - %s", tr.Children().Eq(1).Text(), regionCode)
+				regionMap[regionCode] = regionName
+			})
+		}
+	})
+	return regionMap
+}
+
 func GetDigitalOceanRegions() Regions {
 	return Regions{
 		Storage: getDigitalOceanSpacesRegions(),
+		Compute: getDigitalOceanDropletRegions(),
 	}
 }

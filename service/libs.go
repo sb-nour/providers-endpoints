@@ -1,6 +1,9 @@
 package service
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 // regionMapping is a map that stores the translation of region codes to their corresponding names.
 var regionMapping = map[string]string{
@@ -36,7 +39,7 @@ func translateRegions(regions []string) map[string]string {
 
 	for _, region := range regions {
 		city := translateRegionCode(region)
-		translatedRegions[region] = city
+		translatedRegions[region] = fmt.Sprintf("%s - %s", city, region)
 	}
 
 	return translatedRegions
