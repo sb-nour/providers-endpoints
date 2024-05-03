@@ -40,7 +40,7 @@ func getLightsailComputeRegions() map[string]string {
 	return regionMap
 }
 
-func getLightsailRegions() Regions {
+func GetLightsailRegions() Regions {
 	return Regions{
 		Compute: getLightsailComputeRegions(),
 	}

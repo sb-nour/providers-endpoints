@@ -40,7 +40,7 @@ func getDigitalOceanSpacesRegions() map[string]string {
 	return translateRegions(regions)
 }
 
-func getDigitalOceanRegions() Regions {
+func GetDigitalOceanRegions() Regions {
 	return Regions{
 		Storage: getDigitalOceanSpacesRegions(),
 	}

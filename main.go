@@ -4,32 +4,42 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+
+	"github.com/sb-nour/providers-endpoints/service"
 )
 
 type ProviderRegions struct {
 	Provider string
-	Regions  Regions
+	Regions  service.Regions
 }
 
-type Regions struct {
-	Storage map[string]string `json:"storage"`
-	Compute map[string]string `json:"compute"`
-}
-
-func getRegions() map[string]Regions {
+func getRegions() map[string]service.Regions {
 	var wg sync.WaitGroup
 	providerRegions := make(chan ProviderRegions)
 
 	providers := []struct {
 		name string
-		fn   func() Regions
-	}{}
+		fn   func() service.Regions
+	}{
+		{"AWS", service.GetAmazonRegions},
+		{"LIGHTSAIL", service.GetLightsailRegions},
+		{"DIGITALOCEAN", service.GetDigitalOceanRegions},
+		{"UPCLOUD", service.GetUpcloudRegions},
+		{"EXOSCALE", service.GetExoscaleRegions},
+		{"WASABI", service.GetWasabiRegions},
+		{"GOOGLE_CLOUD", service.GetGoogleCloudRegions},
+		{"BACKBLAZE", service.GetBackblazeRegions},
+		{"LINODE", service.GetLinodeRegions},
+		{"OUTSCALE", service.GetOutscaleRegions},
+		{"STORJ", service.GetStorjRegions},
+		{"VULTR", service.GetVultrRegions},
+	}
 
 	for _, provider := range providers {
 		wg.Add(1)
 		go func(provider struct {
 			name string
-			fn   func() Regions
+			fn   func() service.Regions
 		}) {
 			defer wg.Done()
 			providerRegions <- ProviderRegions{Provider: provider.name, Regions: provider.fn()}
@@ -41,7 +51,7 @@ func getRegions() map[string]Regions {
 		close(providerRegions)
 	}()
 
-	regions := make(map[string]Regions)
+	regions := make(map[string]service.Regions)
 	for pr := range providerRegions {
 		regions[pr.Provider] = pr.Regions
 	}

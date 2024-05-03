@@ -46,7 +46,7 @@ func getLinodeStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getLinodeRegions() Regions {
+func GetLinodeRegions() Regions {
 	return Regions{
 		Storage: getLinodeStorageRegions(),
 	}

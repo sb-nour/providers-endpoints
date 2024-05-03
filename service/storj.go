@@ -33,7 +33,7 @@ func getStorjStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getStorjRegions() Regions {
+func GetStorjRegions() Regions {
 	return Regions{
 		Storage: getStorjStorageRegions(),
 	}

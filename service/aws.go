@@ -82,7 +82,7 @@ func getAmazonEC2Regions() map[string]string {
 	return regionMap
 }
 
-func getAmazonRegions() Regions {
+func GetAmazonRegions() Regions {
 	// Get Amazon S3 Regions
 	s3Regions := getAmazonS3Regions()
 

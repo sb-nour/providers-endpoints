@@ -66,7 +66,7 @@ func getBackblazeStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getBackblazeRegions() Regions {
+func GetBackblazeRegions() Regions {
 	return Regions{
 		Storage: getBackblazeStorageRegions(),
 	}

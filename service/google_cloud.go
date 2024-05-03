@@ -54,7 +54,7 @@ func getGoogleCloudStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getGoogleCloudRegions() Regions {
+func GetGoogleCloudRegions() Regions {
 	return Regions{
 		Storage: getGoogleCloudStorageRegions(),
 	}

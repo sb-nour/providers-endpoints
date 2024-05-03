@@ -83,7 +83,7 @@ func getOutscaleComputeRegions() map[string]string {
 	return regionMap
 }
 
-func getOutscaleRegions() Regions {
+func GetOutscaleRegions() Regions {
 	return Regions{
 		Storage: getOutscaleStorageRegions(),
 		Compute: getOutscaleComputeRegions(),

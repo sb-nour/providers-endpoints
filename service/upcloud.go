@@ -43,7 +43,7 @@ func getUpcloudStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getUpcloudRegions() Regions {
+func GetUpcloudRegions() Regions {
 	return Regions{
 		Storage: getUpcloudStorageRegions(),
 	}

@@ -63,7 +63,7 @@ func getVultrComputeRegions(data VultrResponse) map[string]string {
 	return regionMap
 }
 
-func getVultrRegions() Regions {
+func GetVultrRegions() Regions {
 	data := getVultrData()
 
 	return Regions{

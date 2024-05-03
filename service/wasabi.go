@@ -68,7 +68,7 @@ func getWasabiStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getWasabiRegions() Regions {
+func GetWasabiRegions() Regions {
 	return Regions{
 		Storage: getWasabiStorageRegions(),
 	}

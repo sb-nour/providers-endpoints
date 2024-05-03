@@ -44,7 +44,7 @@ func getExoscaleStorageRegions() map[string]string {
 	return regionMap
 }
 
-func getExoscaleRegions() Regions {
+func GetExoscaleRegions() Regions {
 	return Regions{
 		Storage: getExoscaleStorageRegions(),
 		Compute: getExoscaleStorageRegions(),
