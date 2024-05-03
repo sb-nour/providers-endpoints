@@ -53,9 +53,42 @@ func getGoogleCloudStorageRegions() map[string]string {
 
 	return regionMap
 }
+func getGoogleCloudComputeRegions() map[string]string {
+	url := "https://cloud.google.com/compute/docs/regions-zones"
+
+	// Make a GET request to the URL
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error making GET request:", err)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+
+	if err != nil {
+		fmt.Println("Error loading HTML:", err)
+		return nil
+	}
+
+	var regionMap map[string]string = make(map[string]string)
+	doc.Find("table").Each(func(i int, table *goquery.Selection) {
+		if table.Find("thead th").Length() == 6 {
+			table.Find("tbody tr").Each(func(i int, row *goquery.Selection) {
+				regionCode := strings.ToLower(row.Find("td").Eq(0).Text())
+				regionName := row.Find("td").Eq(1).Text()
+				regionMap[regionCode] = fmt.Sprintf("%s - %s", regionName, regionCode)
+			})
+		}
+
+	})
+
+	return regionMap
+}
 
 func GetGoogleCloudRegions() Regions {
 	return Regions{
 		Storage: getGoogleCloudStorageRegions(),
+		Compute: getGoogleCloudComputeRegions(),
 	}
 }
