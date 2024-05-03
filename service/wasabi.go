@@ -12,9 +12,18 @@ import (
 // Tokyo is the region name and ap-northeast-1 is the region code
 func transformRegionName(regionName string, regionCode string) string {
 	// transform ap-northeast-1 to AP Northeast 1
-	splitRegionName := strings.Title(strings.ReplaceAll(regionCode, "-", " "))
+	splitRegionName := strings.Split(strings.Title(strings.ReplaceAll(regionCode, "-", " ")), " ")
+
+	finalSplitRegionName := make([]string, 0)
+	for i, region := range splitRegionName {
+		if i == 0 {
+			finalSplitRegionName = append(finalSplitRegionName, strings.ToUpper(region))
+			continue
+		}
+		finalSplitRegionName = append(finalSplitRegionName, strings.Title(region))
+	}
 	// append the region code to the region name
-	return fmt.Sprintf("%s (%s) - %s", splitRegionName, regionName, regionCode)
+	return fmt.Sprintf("%s (%s) - %s", strings.Join(finalSplitRegionName, " "), regionName, regionCode)
 }
 
 // getWasabiRegions retrieves the regions and their corresponding codes from the Wasabi website.
