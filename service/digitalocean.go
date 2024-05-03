@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -62,7 +63,7 @@ func getDigitalOceanDropletRegions() map[string]string {
 	doc.Find("table").Each(func(index int, table *goquery.Selection) {
 		if table.Find("thead th").First().Text() == "Datacenter" {
 			table.Find("tbody tr").Each(func(index int, tr *goquery.Selection) {
-				regionCode := tr.Children().Eq(2).Text()
+				regionCode := strings.ToLower(tr.Children().Eq(2).Text())
 				regionName := fmt.Sprintf("%s - %s", tr.Children().Eq(1).Text(), regionCode)
 				regionMap[regionCode] = regionName
 			})

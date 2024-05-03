@@ -77,7 +77,7 @@ func getOutscaleComputeRegions() map[string]string {
 		} else {
 			regionName = fmt.Sprintf("%s %s %s %s", strings.Title(parts[0]), strings.ToTitle(parts[1]), strings.ToUpper(parts[2]), parts[3])
 		}
-		regionMap[regionCode] = regionName
+		regionMap[regionCode] = fmt.Sprintf("%s - %s", regionName, regionCode)
 	})
 
 	return regionMap

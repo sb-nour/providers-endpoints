@@ -38,7 +38,7 @@ func getLinodeStorageRegions() map[string]string {
 			table.Find("tbody tr").Each(func(i int, row *goquery.Selection) {
 				regionCode := row.Find("td").Eq(1).Text()
 				regionName := strings.ReplaceAll(row.Find("td").Eq(0).Text(), "*", "")
-				regionMap[regionCode] = regionName
+				regionMap[regionCode] = fmt.Sprintf("%s - %s", regionName, regionCode)
 			})
 		}
 	})

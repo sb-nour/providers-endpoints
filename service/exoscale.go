@@ -36,7 +36,7 @@ func getExoscaleStorageRegions() map[string]string {
 
 			regionCode := row.Find("td").Eq(2).Text()
 			regionName := row.Find("td").Eq(1).Text()
-			regionMap[regionCode] = regionName
+			regionMap[regionCode] = fmt.Sprintf("%s - %s", regionName, regionCode)
 		})
 
 	})

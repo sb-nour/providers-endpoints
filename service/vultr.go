@@ -43,7 +43,7 @@ func getVultrStorageRegions(data VultrResponse) map[string]string {
 	for _, region := range data.Regions {
 		for _, option := range region.Options {
 			if option == "block_storage_storage_opt" {
-				regionMap[region.ID] = fmt.Sprintf("%s, %s (%s)", region.Name, region.Country, region.Continent)
+				regionMap[region.ID] = fmt.Sprintf("%s, %s (%s) - %s", region.Name, region.Country, region.Continent, region.ID)
 			}
 		}
 	}
@@ -55,7 +55,7 @@ func getVultrComputeRegions(data VultrResponse) map[string]string {
 	for _, region := range data.Regions {
 		for _, option := range region.Options {
 			if option == "kubernetes" {
-				regionMap[region.ID] = fmt.Sprintf("%s, %s (%s)", region.Name, region.Country, region.Continent)
+				regionMap[region.ID] = fmt.Sprintf("%s, %s (%s) - %s", region.Name, region.Country, region.Continent, region.ID)
 			}
 		}
 	}
