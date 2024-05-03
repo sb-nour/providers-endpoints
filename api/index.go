@@ -9,32 +9,27 @@ import (
 	gee "github.com/tbxark/g4vercel"
 )
 
-type ProviderRegions struct {
-	Provider string
-	Regions  service.Regions
+var providers = []struct {
+	name string
+	fn   func() service.Regions
+}{
+	{"AWS", service.GetAmazonRegions},
+	{"BACKBLAZE", service.GetBackblazeRegions},
+	{"DIGITALOCEAN", service.GetDigitalOceanRegions},
+	{"EXOSCALE", service.GetExoscaleRegions},
+	{"GOOGLE_CLOUD", service.GetGoogleCloudRegions},
+	{"LIGHTSAIL", service.GetLightsailRegions},
+	{"LINODE", service.GetLinodeRegions},
+	{"OUTSCALE", service.GetOutscaleRegions},
+	{"STORJ", service.GetStorjRegions},
+	{"UPCLOUD", service.GetUpcloudRegions},
+	{"VULTR", service.GetVultrRegions},
+	{"WASABI", service.GetWasabiRegions},
 }
 
 func getRegions() map[string]service.Regions {
 	var wg sync.WaitGroup
-	providerRegions := make(chan ProviderRegions)
-
-	providers := []struct {
-		name string
-		fn   func() service.Regions
-	}{
-		{"AWS", service.GetAmazonRegions},
-		{"BACKBLAZE", service.GetBackblazeRegions},
-		{"DIGITALOCEAN", service.GetDigitalOceanRegions},
-		{"EXOSCALE", service.GetExoscaleRegions},
-		{"GOOGLE_CLOUD", service.GetGoogleCloudRegions},
-		{"LIGHTSAIL", service.GetLightsailRegions},
-		{"LINODE", service.GetLinodeRegions},
-		{"OUTSCALE", service.GetOutscaleRegions},
-		{"STORJ", service.GetStorjRegions},
-		{"UPCLOUD", service.GetUpcloudRegions},
-		{"VULTR", service.GetVultrRegions},
-		{"WASABI", service.GetWasabiRegions},
-	}
+	providerRegions := make(chan service.ProviderRegions)
 
 	for _, provider := range providers {
 		wg.Add(1)
@@ -43,7 +38,7 @@ func getRegions() map[string]service.Regions {
 			fn   func() service.Regions
 		}) {
 			defer wg.Done()
-			providerRegions <- ProviderRegions{Provider: provider.name, Regions: provider.fn()}
+			providerRegions <- service.ProviderRegions{Provider: provider.name, Regions: provider.fn()}
 		}(provider)
 	}
 
@@ -62,17 +57,19 @@ func getRegions() map[string]service.Regions {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	server := gee.New()
-	regions := getRegions()
 	server.GET("/", func(context *gee.Context) {
+		regions := getRegions()
 		context.JSON(200, regions)
 	})
 	server.GET("/:key", func(context *gee.Context) {
 		key := strings.ToUpper(context.Param("key"))
-		if _, ok := regions[key]; !ok {
-			context.JSON(404, gee.H{"error": "Not Found"})
-			return
+		// if key is in `providers`, run the function and return the result
+		for _, provider := range providers {
+			if key == provider.name {
+				context.JSON(200, provider.fn())
+				break
+			}
 		}
-		context.JSON(200, regions[key])
 	})
 	server.Handle(w, r)
 }
