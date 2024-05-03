@@ -10,7 +10,6 @@ require (
 require (
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/google/uuid v1.2.0 // indirect
-	github.com/tbxark/g4vercel v0.0.4 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
