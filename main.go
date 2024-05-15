@@ -34,6 +34,7 @@ func getRegions() map[string]service.Regions {
 		{"Storj", service.GetStorjRegions},
 		{"Vultr", service.GetVultrRegions},
 		{"Hetzner", service.GetHetznerRegions},
+		{"Synology", service.GetSynologyRegions},
 	}
 
 	for _, provider := range providers {
