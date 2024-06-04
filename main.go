@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	handler "github.com/sb-nour/providers-endpoints/api"
+	"github.com/sb-nour/providers-endpoints/lib"
 )
 
 func main() {
-	regions := handler.GetRegions()
+	regions := lib.GetRegions()
 	regionsJson, err := json.Marshal(regions)
 	if err != nil {
 		fmt.Println("Error marshalling JSON:", err)

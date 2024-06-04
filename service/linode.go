@@ -23,7 +23,10 @@ type LinodeResponse struct {
 
 func getLinodeStorageRegions() map[string]string {
 	url := "https://www.linode.com/docs/products/storage/object-storage/"
-	doc, _ := get(url)
+	doc, err := get(url)
+	if err != nil {
+		panic(err)
+	}
 
 	var regionMap map[string]string = make(map[string]string)
 	doc.Find("table").Each(func(i int, table *goquery.Selection) {
