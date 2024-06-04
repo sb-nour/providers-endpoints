@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -21,11 +23,11 @@ type LinodeResponse struct {
 	Regions []LinodeRegion `json:"data"`
 }
 
-func getLinodeStorageRegions() map[string]string {
+func getLinodeStorageRegions() (map[string]string, error) {
 	url := "https://www.linode.com/docs/products/storage/object-storage/"
 	doc, err := get(url)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var regionMap map[string]string = make(map[string]string)
@@ -45,7 +47,7 @@ func getLinodeStorageRegions() map[string]string {
 		}
 	})
 
-	return regionMap
+	return regionMap, nil
 }
 
 func getLinodeData() LinodeResponse {
@@ -81,8 +83,31 @@ func getLinodeComputeRegions(data LinodeResponse) map[string]string {
 }
 
 func GetLinodeRegions() Regions {
+	storageRegions, err := getLinodeStorageRegions()
+	if err != nil {
+		// fmt.Printf("Error: %v", err)
+		// Load the regions from the local file ./linode_fallback.json
+		filePath := "./service/linode_fallback.json"
+		absPath, _ := filepath.Abs(filePath)
+		jsonContent, err := ioutil.ReadFile(absPath)
+		if err != nil {
+			if debugging {
+				fmt.Printf("Error reading file: %v", err)
+			}
+			return Regions{}
+		}
+
+		// json has "storage" and "compute" keys
+		var regions map[string]map[string]string
+		json.Unmarshal(jsonContent, &regions)
+
+		return Regions{
+			Storage: regions["storage"],
+			Compute: regions["compute"],
+		}
+	}
 	return Regions{
-		Storage: getLinodeStorageRegions(),
+		Storage: storageRegions,
 		Compute: getLinodeComputeRegions(getLinodeData()),
 	}
 }
