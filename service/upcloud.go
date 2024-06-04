@@ -2,8 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -50,14 +48,37 @@ func GetUpcloudRegions() Regions {
 	if err != nil {
 		// fmt.Printf("Error: %v", err)
 		// Load the regions from the local file ./upcloud_fallback.json
-		filePath := "./service/upcloud_fallback.json"
-		jsonContent, err := os.ReadFile(filePath)
-		if err != nil {
-			if debugging {
-				fmt.Printf("Error reading file: %v", err)
-			}
-			return Regions{}
-		}
+		jsonContent := []byte(`{
+  "storage": {
+    "au-syd1": "Sydney, Australia - AU SYD1",
+    "de-fra1": "Frankfurt, Germany - DE FRA1",
+    "fi-hel2": "Helsinki, Finland - FI HEL2",
+    "es-mad1": "Madrid, Spain - ES MAD1",
+    "nl-ams1": "Amsterdam, Netherlands - NL AMS1",
+    "pl-waw1": "Warsaw, Poland - PL WAW1",
+    "sg-sin1": "Singapore - SG SIN1",
+    "uk-lon1": "London, UK - UK LON1",
+    "us-chi1": "Chicago, USA - US CHI1",
+    "us-nyc1": "New York, USA - US NYC1",
+    "us-sjo1": "San Jose, USA - US SJO1"
+  },
+  "compute": {
+    "au-syd1": "Sydney, Australia - AU SYD1",
+    "de-fra1": "Frankfurt, Germany - DE FRA1",
+    "fi-hel1": "Helsinki, Finland - FI HEL1",
+    "fi-hel2": "Helsinki, Finland - FI HEL2",
+    "es-mad1": "Madrid, Spain - ES MAD1",
+    "nl-ams1": "Amsterdam, Netherlands - NL AMS1",
+    "pl-waw1": "Warsaw, Poland - PL WAW1",
+    "se-sto1": "Stockholm, Sweden - SE STO1",
+    "sg-sin1": "Singapore - SG SIN1",
+    "uk-lon1": "London, UK - UK LON1",
+    "us-chi1": "Chicago, USA - US CHI1",
+    "us-nyc1": "New York, USA - US NYC1",
+    "us-sjo1": "San Jose, USA - US SJO1"
+  }
+}
+`)
 
 		// json has "storage" and "compute" keys
 		var regions map[string]map[string]string
