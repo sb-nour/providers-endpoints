@@ -3,8 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
+	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -52,8 +51,7 @@ func GetUpcloudRegions() Regions {
 		// fmt.Printf("Error: %v", err)
 		// Load the regions from the local file ./upcloud_fallback.json
 		filePath := "./service/upcloud_fallback.json"
-		absPath, _ := filepath.Abs(filePath)
-		jsonContent, err := ioutil.ReadFile(absPath)
+		jsonContent, err := os.ReadFile(filePath)
 		if err != nil {
 			if debugging {
 				fmt.Printf("Error reading file: %v", err)
