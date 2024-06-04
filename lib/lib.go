@@ -1,4 +1,4 @@
-package handler
+package lib
 
 import (
 	"sync"
@@ -6,7 +6,7 @@ import (
 	"github.com/sb-nour/providers-endpoints/service"
 )
 
-var providers = []struct {
+var Providers = []struct {
 	name string
 	fn   func() service.Regions
 }{
@@ -30,10 +30,10 @@ func GetRegions() map[string]service.Regions {
 	workerCount := 10
 	regions := make(map[string]service.Regions)
 	var wg sync.WaitGroup
-	providerRegions := make(chan service.ProviderRegions, len(providers))
+	providerRegions := make(chan service.ProviderRegions, len(Providers))
 	workerPool := make(chan struct{}, workerCount)
 
-	for _, provider := range providers {
+	for _, provider := range Providers {
 		workerPool <- struct{}{}
 		wg.Add(1)
 		go func(provider struct {
