@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -10,20 +9,7 @@ import (
 
 func getHetznerRegions() map[string]string {
 	url := "https://docs.hetzner.com/cloud/general/locations/"
-
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
-	}
+	doc, _ := get(url)
 
 	var regionMap map[string]string = make(map[string]string)
 
@@ -45,8 +31,9 @@ func getHetznerRegions() map[string]string {
 }
 
 func GetHetznerRegions() Regions {
+	regions := getHetznerRegions()
 	return Regions{
-		Compute: getHetznerRegions(),
-		Storage: getHetznerRegions(),
+		Compute: regions,
+		Storage: regions,
 	}
 }

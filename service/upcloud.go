@@ -1,31 +1,16 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
-	"net/http"
+	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getUpcloudStorageRegions() map[string]string {
-	url := "https://upcloud.com/data-centres"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
-	}
-
+func getUpcloudStorageRegions(doc *goquery.Document) map[string]string {
 	var regionMap map[string]string = make(map[string]string)
 
 	doc.Find(".accordion").First().Find(".accordion-item").Each(func(i int, item *goquery.Selection) {
@@ -42,24 +27,7 @@ func getUpcloudStorageRegions() map[string]string {
 
 	return regionMap
 }
-
-func getUpcloudComputeRegions() map[string]string {
-	url := "https://upcloud.com/data-centres"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
-	}
+func getUpcloudComputeRegions(doc *goquery.Document) map[string]string {
 
 	var regionMap map[string]string = make(map[string]string)
 
@@ -79,8 +47,34 @@ func getUpcloudComputeRegions() map[string]string {
 }
 
 func GetUpcloudRegions() Regions {
+	doc, err := get("https://upcloud.com/data-centres")
+	if err != nil {
+		// fmt.Printf("Error: %v", err)
+		// Load the regions from the local file ./upcloud_fallback.json
+		filePath := "./service/upcloud_fallback.json"
+		absPath, _ := filepath.Abs(filePath)
+		jsonContent, err := ioutil.ReadFile(absPath)
+		if err != nil {
+			if debugging {
+				fmt.Printf("Error reading file: %v", err)
+			}
+			return Regions{}
+		}
+
+		// json has "storage" and "compute" keys
+		var regions map[string]map[string]string
+		json.Unmarshal(jsonContent, &regions)
+
+		return Regions{
+			Storage: regions["storage"],
+			Compute: regions["compute"],
+		}
+	}
+	storageRegions := getUpcloudStorageRegions(doc)
+	computeRegions := getUpcloudComputeRegions(doc)
+
 	return Regions{
-		Storage: getUpcloudStorageRegions(),
-		Compute: getUpcloudComputeRegions(),
+		Storage: storageRegions,
+		Compute: computeRegions,
 	}
 }

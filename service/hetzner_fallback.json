@@ -1,0 +1,16 @@
+{
+  "storage": {
+    "ash": "US Ashburn, VA - ash",
+    "fsn1": "DE Falkenstein - fsn1",
+    "hel1": "FI Helsinki - hel1",
+    "hil": "US Hillsboro, OR - hil",
+    "nbg1": "DE Nuremberg - nbg1"
+  },
+  "compute": {
+    "ash": "US Ashburn, VA - ash",
+    "fsn1": "DE Falkenstein - fsn1",
+    "hel1": "FI Helsinki - hel1",
+    "hil": "US Hillsboro, OR - hil",
+    "nbg1": "DE Nuremberg - nbg1"
+  }
+}

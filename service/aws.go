@@ -2,68 +2,44 @@ package service
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getAmazonS3Regions() map[string]string {
+func getAmazonS3Regions() (map[string]string, error) {
 	url := "https://docs.aws.amazon.com/general/latest/gr/s3.html"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
+	doc, err := get(url)
 	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
+		return nil, err
 	}
 
 	var regionMap map[string]string = make(map[string]string)
 
-	doc.Find("#main-col-body div table tbody tr").Each(func(i int, row *goquery.Selection) {
-		// Check if the row has five columns
-		if row.Children().Length() == 5 {
-
-			// First Column is Region Name,
-			// Second Column is Region Code
-
-			// create a map of region code to region name
-
-			regionCode := strings.Trim(row.Children().Eq(1).Text(), " \n")
-			regionName := strings.Trim(row.Children().Eq(0).Text(), " \n") + " - " + strings.Trim(row.Children().Eq(1).Text(), " \n")
-
-			regionMap[regionCode] = regionName
+	doc.Find("#main-col-body div table").Each(func(i int, table *goquery.Selection) {
+		// CHeck if the thead first row's first th is "Region Name"
+		if table.Find("thead th").Eq(0).Text() != "Region Name" {
+			return
 		}
+		table.Find("tbody tr").Each(func(i int, row *goquery.Selection) {
+			if row.Children().Length() == 5 {
+				regionCode := strings.Trim(row.Children().Eq(1).Text(), " \n")
+				regionName := strings.Trim(row.Children().Eq(0).Text(), " \n") + " - " + strings.Trim(row.Children().Eq(1).Text(), " \n")
+
+				regionMap[regionCode] = regionName
+			}
+		})
 	})
 
-	return regionMap
+	return regionMap, nil
 }
 
-func getAmazonEC2Regions() map[string]string {
+func getAmazonEC2Regions() (map[string]string, error) {
 
 	url := "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-regions"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
+	doc, err := get(url)
 	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
+		return nil, err
 	}
 
 	var regionMap map[string]string = make(map[string]string)
@@ -79,15 +55,21 @@ func getAmazonEC2Regions() map[string]string {
 		}
 	})
 
-	return regionMap
+	return regionMap, nil
 }
 
 func GetAmazonRegions() Regions {
-	// Get Amazon S3 Regions
-	s3Regions := getAmazonS3Regions()
 
-	// Get Amazon EC2 Regions
-	ec2Regions := getAmazonEC2Regions()
+	s3Regions, err := getAmazonS3Regions()
+	if err != nil {
+		// Throw error
+		fmt.Println(err)
+	}
+	ec2Regions, err := getAmazonEC2Regions()
+	if err != nil {
+		// Throw error
+		fmt.Println(err)
+	}
 
 	regions := Regions{
 		Storage: s3Regions,

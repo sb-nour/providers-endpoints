@@ -2,28 +2,13 @@ package service
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 func getExoscaleStorageRegions() map[string]string {
 	url := "https://community.exoscale.com/documentation/platform/exoscale-datacenter-zones/"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
-	}
+	doc, _ := get(url)
 
 	var regionMap map[string]string = make(map[string]string)
 	doc.Find("table").Each(func(i int, table *goquery.Selection) {
@@ -45,8 +30,9 @@ func getExoscaleStorageRegions() map[string]string {
 }
 
 func GetExoscaleRegions() Regions {
+	regions := getExoscaleStorageRegions()
 	return Regions{
-		Storage: getExoscaleStorageRegions(),
-		Compute: getExoscaleStorageRegions(),
+		Storage: regions,
+		Compute: regions,
 	}
 }

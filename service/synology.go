@@ -2,10 +2,9 @@ package service
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"sync"
-
-	"github.com/go-ping/ping"
 )
 
 var synologyKnownPrefixes = []string{
@@ -26,20 +25,33 @@ func getSynologyStorageRegions() map[string]string {
 
 	var wg sync.WaitGroup
 	results := make(chan map[string]string)
+	iterations := 8
+	workerCount := len(synologyKnownPrefixes) * iterations // Set the number of concurrent workers
+
+	// Create a buffered channel to limit the number of concurrent goroutines
+	workerPool := make(chan struct{}, workerCount)
 
 	for _, region := range synologyKnownPrefixes {
-		for i := 0; i < 6; i++ {
+		for i := 0; i < iterations; i++ {
 			wg.Add(1)
+			workerPool <- struct{}{} // Acquire a worker slot
+
 			go func(region string, i int) {
-				defer wg.Done()
+				defer func() {
+					wg.Done()
+					<-workerPool // Release the worker slot
+				}()
+
 				formatedRegionCode := region + fmt.Sprintf("%03d", i)
 				endpoint := formatedRegionCode + ".s3.synologyc2.net"
-				pinger, err := ping.NewPinger(endpoint)
+				addrs, err := net.LookupHost(endpoint)
 				if err != nil {
 					return
 				}
-				pinger.Count = 1
-				pinger.Run() // blocks until finished
+				if len(addrs) == 0 {
+					return
+				}
+
 				results <- map[string]string{formatedRegionCode: transformLabelSynology(formatedRegionCode)}
 			}(region, i)
 		}

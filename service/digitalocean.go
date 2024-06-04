@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -14,21 +13,7 @@ import (
 // Returns a map of region names and their corresponding values.
 func getDigitalOceanSpacesRegions() map[string]string {
 	url := "https://docs.digitalocean.com/products/spaces/details/availability/"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
-	}
+	doc, _ := get(url)
 
 	var regions []string
 	doc.Find("thead th").Each(func(index int, th *goquery.Selection) {
@@ -42,22 +27,8 @@ func getDigitalOceanSpacesRegions() map[string]string {
 }
 
 func getDigitalOceanDropletRegions() map[string]string {
-	url := "https://docs.digitalocean.com/products/platform/availability-matrix/"
-
-	// Make a GET request to the URL
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error making GET request:", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		fmt.Println("Error loading HTML:", err)
-		return nil
-	}
+	url := "https://docs.digitalocean.com/platform/regional-availability/"
+	doc, _ := get(url)
 
 	var regionMap = make(map[string]string)
 	doc.Find("table").Each(func(index int, table *goquery.Selection) {

@@ -1,0 +1,30 @@
+{
+  "storage": {
+    "au-syd1": "Sydney, Australia - AU SYD1",
+    "de-fra1": "Frankfurt, Germany - DE FRA1",
+    "fi-hel2": "Helsinki, Finland - FI HEL2",
+    "es-mad1": "Madrid, Spain - ES MAD1",
+    "nl-ams1": "Amsterdam, Netherlands - NL AMS1",
+    "pl-waw1": "Warsaw, Poland - PL WAW1",
+    "sg-sin1": "Singapore - SG SIN1",
+    "uk-lon1": "London, UK - UK LON1",
+    "us-chi1": "Chicago, USA - US CHI1",
+    "us-nyc1": "New York, USA - US NYC1",
+    "us-sjo1": "San Jose, USA - US SJO1"
+  },
+  "compute": {
+    "au-syd1": "Sydney, Australia - AU SYD1",
+    "de-fra1": "Frankfurt, Germany - DE FRA1",
+    "fi-hel1": "Helsinki, Finland - FI HEL1",
+    "fi-hel2": "Helsinki, Finland - FI HEL2",
+    "es-mad1": "Madrid, Spain - ES MAD1",
+    "nl-ams1": "Amsterdam, Netherlands - NL AMS1",
+    "pl-waw1": "Warsaw, Poland - PL WAW1",
+    "se-sto1": "Stockholm, Sweden - SE STO1",
+    "sg-sin1": "Singapore - SG SIN1",
+    "uk-lon1": "London, UK - UK LON1",
+    "us-chi1": "Chicago, USA - US CHI1",
+    "us-nyc1": "New York, USA - US NYC1",
+    "us-sjo1": "San Jose, USA - US SJO1"
+  }
+}

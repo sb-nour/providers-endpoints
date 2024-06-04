@@ -1,3 +1,11 @@
 {
-  "routes": [{ "src": "/(.*)", "dest": "/api" }]
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api",
+      "methods": ["GET"],
+      "status": 200,
+      "headers": { "cache-control": "public, max-age=86400" }
+    }
+  ]
 }
