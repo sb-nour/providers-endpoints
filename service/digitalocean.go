@@ -36,7 +36,9 @@ func getDigitalOceanDropletRegions() map[string]string {
 			table.Find("tbody tr").Each(func(index int, tr *goquery.Selection) {
 				regionCode := strings.ToLower(tr.Children().Eq(2).Text())
 				regionName := fmt.Sprintf("%s - %s", tr.Children().Eq(1).Text(), regionCode)
-				regionMap[regionCode] = regionName
+				if len(regionCode) > 0 {
+					regionMap[regionCode] = regionName
+				}
 			})
 		}
 	})
