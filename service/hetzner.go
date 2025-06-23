@@ -17,21 +17,22 @@ func getHetznerRegions() map[string]string {
 	table := doc.Find("table").First()
 	table.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
 		tr.Find("td").Each(func(j int, td *goquery.Selection) {
+			// Skip empty cells
+			if strings.TrimSpace(td.Text()) == "" {
+				return
+			}
+
 			codeSel := td.Find("code")
 			if codeSel.Length() > 0 {
 				regionCode := strings.TrimSpace(codeSel.Text())
-				// Remove the <code>...</code> from the HTML to get the location name
-				locationHtml, _ := td.Html()
-				// Remove the code tag and trim
-				locationName := strings.TrimSpace(strings.Replace(td.Text(), regionCode, "", 1))
-				// If locationName is still empty, fallback to the text before <code>
-				if locationName == "" {
-					parts := strings.Split(locationHtml, "<code>")
-					if len(parts) > 0 {
-						locationName = strings.TrimSpace(stripTags(parts[0]))
-					}
+				// Extract the location name by removing the code part
+				fullText := strings.TrimSpace(td.Text())
+				locationName := strings.TrimSpace(strings.Replace(fullText, regionCode, "", 1))
+
+				// Clean up the location name
+				if locationName != "" {
+					regionMap[regionCode] = fmt.Sprintf("%s - %s", locationName, regionCode)
 				}
-				regionMap[regionCode] = fmt.Sprintf("%s - %s", locationName, regionCode)
 			}
 		})
 	})

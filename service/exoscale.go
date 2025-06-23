@@ -2,12 +2,13 @@ package service
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 func getExoscaleStorageRegions() map[string]string {
-	url := "https://community.exoscale.com/documentation/platform/exoscale-datacenter-zones/"
+	url := "https://www.exoscale.com/datacenters/"
 	doc, err := get(url)
 	if err != nil || doc == nil {
 		// fmt.Printf("[Exoscale] Error fetching or parsing regions: %v\n", err)
@@ -15,19 +16,16 @@ func getExoscaleStorageRegions() map[string]string {
 	}
 
 	var regionMap map[string]string = make(map[string]string)
-	doc.Find("table").Each(func(i int, table *goquery.Selection) {
-		// if table doesn't have more than 2 rows, return
-		if table.Find("tbody tr").Length() < 2 {
-			return
+
+	// Find the datacenters div and parse article elements
+	doc.Find("div.datacenters article").Each(func(i int, article *goquery.Selection) {
+		// Extract locality and region code from spans within h2
+		locality := strings.TrimSpace(article.Find("span.datacenters-locality").Text())
+		regionCode := strings.TrimSpace(article.Find("span.datacenters-name").Text())
+
+		if locality != "" && regionCode != "" {
+			regionMap[regionCode] = fmt.Sprintf("%s - %s", locality, regionCode)
 		}
-
-		table.Find("tbody tr").Each(func(i int, row *goquery.Selection) {
-
-			regionCode := row.Find("td").Eq(2).Text()
-			regionName := row.Find("td").Eq(1).Text()
-			regionMap[regionCode] = fmt.Sprintf("%s - %s", regionName, regionCode)
-		})
-
 	})
 
 	return regionMap

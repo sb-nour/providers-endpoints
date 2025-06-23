@@ -14,6 +14,7 @@ import (
 
 type SlackMessage struct {
 	Text        string            `json:"text,omitempty"`
+	Channel     string            `json:"channel,omitempty"`
 	Attachments []SlackAttachment `json:"attachments,omitempty"`
 }
 
@@ -32,13 +33,18 @@ type SlackField struct {
 }
 
 func SendSlackNotification(webhookURL, message string) error {
+	return SendSlackNotificationWithChannel(webhookURL, message, "")
+}
+
+func SendSlackNotificationWithChannel(webhookURL, message, channel string) error {
 	if webhookURL == "" {
 		log.Printf("Slack webhook URL not configured, skipping notification: %s", message)
 		return nil
 	}
 
 	slackMessage := SlackMessage{
-		Text: message,
+		Text:    message,
+		Channel: channel,
 	}
 
 	jsonData, err := json.Marshal(slackMessage)
@@ -66,7 +72,14 @@ func SendRegionsFetchErrorNotification(provider string, err error) {
 		return
 	}
 
+	// Check for error-specific channel override
+	var errorChannel string
+	if envChannel := os.Getenv("SLACK_ERROR_CHANNEL"); envChannel != "" {
+		errorChannel = fmt.Sprintf("#%s", envChannel)
+	}
+
 	message := SlackMessage{
+		Channel: errorChannel,
 		Attachments: []SlackAttachment{
 			{
 				Color: "danger",
@@ -121,6 +134,12 @@ func SendRegionsChangedNotification(provider string, oldRegions, newRegions serv
 		return
 	}
 
+	// Check for changes-specific channel override
+	var changesChannel string
+	if envChannel := os.Getenv("SLACK_CHANGES_CHANNEL"); envChannel != "" {
+		changesChannel = fmt.Sprintf("#%s", envChannel)
+	}
+
 	// Calculate changes
 	storageChanges := calculateRegionChanges(oldRegions.Storage, newRegions.Storage)
 	computeChanges := calculateRegionChanges(oldRegions.Compute, newRegions.Compute)
@@ -142,6 +161,7 @@ func SendRegionsChangedNotification(provider string, oldRegions, newRegions serv
 	}
 
 	message := SlackMessage{
+		Channel: changesChannel,
 		Attachments: []SlackAttachment{
 			{
 				Color: "warning",

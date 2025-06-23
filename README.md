@@ -34,6 +34,10 @@ TURSO_AUTH_TOKEN=your-turso-auth-token
 
 # Slack Webhook Configuration (Required for notifications)
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+
+# Optional: Specific channels for different notification types
+SLACK_ERROR_CHANNEL=#alerts
+SLACK_CHANGES_CHANNEL=#infrastructure-changes
 ```
 
 ### Setting up Turso DB
@@ -48,6 +52,16 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
 1. Create a Slack app in your workspace
 2. Add an Incoming Webhook integration
 3. Copy the webhook URL to your environment configuration
+
+#### Channel Selection Options
+
+The application supports sending notifications to different channels:
+
+1. **Default Channel**: Messages go to the channel configured in your webhook
+2. **Error Channel**: Set `SLACK_ERROR_CHANNEL` to send error notifications to a specific channel (e.g., "#alerts")
+3. **Changes Channel**: Set `SLACK_CHANGES_CHANNEL` to send region change notifications to a specific channel (e.g., "#infrastructure-changes")
+
+**Note**: Channel override requires your webhook to have permissions to post to different channels, or you may need to use a bot token instead of webhooks for full channel control.
 
 ## Dependencies
 
