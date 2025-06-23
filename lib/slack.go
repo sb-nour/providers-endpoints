@@ -98,7 +98,7 @@ func SendRegionsFetchErrorNotification(provider string, err error) {
 					},
 					{
 						Title: "Timestamp",
-						Value: time.Now().Format(time.RFC3339),
+						Value: time.Now().Format("2006-01-02 15:04:05"),
 						Short: true,
 					},
 				},
@@ -190,7 +190,7 @@ func SendRegionsChangedNotification(provider string, oldRegions, newRegions serv
 					},
 					{
 						Title: "Timestamp",
-						Value: time.Now().Format(time.RFC3339),
+						Value: time.Now().Format("2006-01-02 15:04:05"),
 						Short: true,
 					},
 				},
