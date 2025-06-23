@@ -8,49 +8,31 @@ import (
 )
 
 func getOutscaleStorageRegions(doc *goquery.Document) map[string]string {
-	var regionMap map[string]string = make(map[string]string)
-	doc.Find("#_outscale_object_storage_oos").First().Next().Find("tbody tr").Each(func(i int, row *goquery.Selection) {
-
-		regionCode := strings.ToLower(row.Find("td").Eq(0).Text())
-		// parts := strings.Split(row.Find("td").Eq(0).Text(), " - ")
-		regionName := row.Find("td").Eq(0).Text()
-		parts := strings.Split(regionName, "-")
-		// regionName = fmt.Sprintf("%s %s %s", strings.ToUpper(parts[0]), strings.ToTitle(parts[1]), parts[2])
-
-		if len(parts) == 3 {
-			regionName = fmt.Sprintf("%s %s %s", strings.ToUpper(parts[0]), strings.Title(parts[1]), parts[2])
-		} else {
-			regionName = fmt.Sprintf("%s %s %s %s", strings.Title(parts[0]), strings.ToTitle(parts[1]), strings.ToUpper(parts[2]), parts[3])
+	regionMap := make(map[string]string)
+	var currentRegion string
+	doc.Find("h2#_mapping_between_subregions_and_physical_zones").NextAllFiltered("div.sectionbody").First().
+		Find("table.tableblock tbody tr").Each(func(i int, row *goquery.Selection) {
+		cols := row.Find("td")
+		if cols.Length() == 3 {
+			regionCell := cols.Eq(0).Find("p").Text()
+			if regionCell != "" {
+				currentRegion = strings.TrimSpace(regionCell)
+			}
+			subregions := strings.TrimSpace(cols.Eq(1).Find("p").Text())
+			physicalZone := strings.TrimSpace(cols.Eq(2).Find("p").Text())
+			regionMap[currentRegion] = fmt.Sprintf("Region: %s - Subregions: %s - Physical Zones: %s", currentRegion, subregions, physicalZone)
 		}
-		regionMap[regionCode] = regionName
 	})
-
 	return regionMap
 }
+
 func getOutscaleComputeRegions(doc *goquery.Document) map[string]string {
-
-	var regionMap map[string]string = make(map[string]string)
-	doc.Find("#_available_endpoints").First().Next().Find("tbody tr").Each(func(i int, row *goquery.Selection) {
-
-		regionCode := strings.ToLower(row.Find("td").Eq(0).Text())
-		// parts := strings.Split(row.Find("td").Eq(0).Text(), " - ")
-		regionName := row.Find("td").Eq(0).Text()
-		parts := strings.Split(regionName, "-")
-		// regionName = fmt.Sprintf("%s %s %s", strings.ToUpper(parts[0]), strings.ToTitle(parts[1]), parts[2])
-
-		if len(parts) == 3 {
-			regionName = fmt.Sprintf("%s %s %s", strings.ToUpper(parts[0]), strings.Title(parts[1]), parts[2])
-		} else {
-			regionName = fmt.Sprintf("%s %s %s %s", strings.Title(parts[0]), strings.ToTitle(parts[1]), strings.ToUpper(parts[2]), parts[3])
-		}
-		regionMap[regionCode] = fmt.Sprintf("%s - %s", regionName, regionCode)
-	})
-
-	return regionMap
+	// Same logic as storage, as the table now contains all region info
+	return getOutscaleStorageRegions(doc)
 }
 
 func GetOutscaleRegions() Regions {
-	doc, _ := get("https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Subregions-Reference.html")
+	doc, _ := get("https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.html")
 	return Regions{
 		Storage: getOutscaleStorageRegions(doc),
 		Compute: getOutscaleComputeRegions(doc),

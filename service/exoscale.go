@@ -8,7 +8,11 @@ import (
 
 func getExoscaleStorageRegions() map[string]string {
 	url := "https://community.exoscale.com/documentation/platform/exoscale-datacenter-zones/"
-	doc, _ := get(url)
+	doc, err := get(url)
+	if err != nil || doc == nil {
+		// fmt.Printf("[Exoscale] Error fetching or parsing regions: %v\n", err)
+		return map[string]string{}
+	}
 
 	var regionMap map[string]string = make(map[string]string)
 	doc.Find("table").Each(func(i int, table *goquery.Selection) {

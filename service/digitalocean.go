@@ -16,10 +16,26 @@ func getDigitalOceanSpacesRegions() map[string]string {
 	doc, _ := get(url)
 
 	var regions []string
-	doc.Find("thead th").Each(func(index int, th *goquery.Selection) {
-		// Check if the corresponding <td> has the "◆" symbol
-		if td := doc.Find("tbody tr").Children().Eq(index); td.Text() == "◆" {
-			regions = append(regions, th.Text())
+
+	// Get all <th> from <thead> (region codes), skipping the first ("Product")
+	headers := []string{}
+	doc.Find("thead th").Each(func(i int, th *goquery.Selection) {
+		if i > 0 { // skip "Product"
+			headers = append(headers, strings.TrimSpace(th.Text()))
+		}
+	})
+
+	// Find the first <tr> in <tbody> (the 'Spaces' row)
+	spacesRow := doc.Find("tbody tr").First()
+	spacesRow.Find("td").Each(func(i int, td *goquery.Selection) {
+		if i == 0 {
+			return // skip the first column ("Spaces")
+		}
+		// Check if this <td> contains <i class="fa-solid fa-circle"></i>
+		if td.Find("i.fa-solid.fa-circle").Length() > 0 {
+			if i-1 < len(headers) {
+				regions = append(regions, headers[i-1])
+			}
 		}
 	})
 

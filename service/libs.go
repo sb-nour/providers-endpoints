@@ -14,6 +14,15 @@ var regionMapping = map[string]string{
 	"FRA": "Frankfurt",
 	"BLR": "Bangalore",
 	"SYD": "Sydney",
+	"TOR": "Toronto",
+	"LON": "London",
+	"PAR": "Paris",
+	"BER": "Berlin",
+	"MIL": "Milan",
+	"MAD": "Madrid",
+	"ROM": "Rome",
+	"ATH": "Athens",
+	"ATL": "Atlanta",
 }
 
 // translateRegionCode translates a region code into a city name.
